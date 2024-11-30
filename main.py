@@ -213,7 +213,7 @@ class_indices_train = train_ds.class_indices
 print("Class indices for training generator:", class_indices_train)
 
 #Testing Augmented Data
-test_dir_path = "archive/test"
+test_dir_path = "dogs_vs_cats/test"
 # Defining Validation_generator withour Data Augmentation
 data_test_gen = ImageDataGenerator(rescale = 1/255.)
 
@@ -271,7 +271,7 @@ plt.ylabel("Accuracy")
 plt.show()
 
 # List of paths to your single images
-image_paths = ['archive/train/cats/cat.0.jpg', 'archive/train/cats/cat.1.jpg', 'archive/train/dogs/dog.1.jpg']
+image_paths = ['dogs_vs_cats/train/cats/cat.0.jpg', 'dogs_vs_cats/train/cats/cat.1.jpg', 'dogs_vs_cats/train/dogs/dog.1.jpg']
 # Intialize true labels
 true_labels = ['Cat', 'Cat','Dog']
 
