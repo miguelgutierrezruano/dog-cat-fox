@@ -9,6 +9,10 @@ __pycache__/
 # Dataset ignore
 dogs_vs_cats
 
+# Virtual environment ignore
+pic
+pic-lnx
+
 # Distribution / packaging
 .Python
 build/

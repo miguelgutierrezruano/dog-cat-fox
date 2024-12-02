@@ -1,147 +1,6 @@
 
-# Imported code from https://www.kaggle.com/code/abdmental01/cat-vs-dog-transfer-learning-0-99/notebook
-
-#Checking GPU Support
-import tensorflow as tf
-print(tf.config.list_physical_devices('GPU'))
-
-#Import Os and Basis Libraries
-import cv2
-import os
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt 
-import plotly.graph_objects as go
-#Matplot Images
-import matplotlib.image as mpimg
-# Tensflor and Keras Layer and Model and Optimize and Loss
-import tensorflow as tf
-from tensorflow import keras
-from keras import Sequential
-from keras.layers import *
-from tensorflow.keras.losses import BinaryCrossentropy
-# import tensorflow_hub as hub
-from tensorflow.keras.optimizers import Adam
-#PreTrained Model VGG16
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.applications import Xception
-#Image Generator DataAugmentation
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from keras.preprocessing import image
-#Early Stopping
-from tensorflow.keras.callbacks import EarlyStopping
-# Warnings Remove 
-import warnings 
-warnings.filterwarnings("ignore")
-
-# Directory containing the "Train" folder
-directory = "dogs_vs_cats"
-
-# List of categories (subfolder names)
-categories = ["cats", "dogs"]
-
-# Initialize lists to store filenames and categories
-filenames = []
-category_labels = []
-
-# Iterate through the categories
-for category in categories:
-    # Path to the current category folder
-    category_folder = os.path.join(directory, "train", category)
-    # List all filenames in the category folder
-    category_filenames = os.listdir(category_folder)
-    # Append filenames and corresponding category labels
-    filenames.extend(category_filenames)
-    category_labels.extend([category] * len(category_filenames))
-
-# Create DataFrame
-df = pd.DataFrame({
-    'filename': filenames,
-    'category': category_labels
-})
-
-# Display the first few rows of the DataFrame
-print(df.head())
-
-# Count the occurrences of each category in the 'category' column
-count = df['category'].value_counts()
-
-# Create a pie chart using Seaborn
-plt.figure(figsize=(6, 6) , facecolor='darkblue')
-palette = sns.color_palette("viridis")
-sns.set_palette(palette)
-plt.pie(count, labels=count.index, autopct='%1.1f%%', startangle=140)
-plt.title('Distribution of Categories') 
-plt.axis('equal') 
-
-plt.show()  # Show the plot
-
-def visualize_images(path, num_images=5):
-    # Get a list of image filenames in the specified path
-    image_filenames = os.listdir(path)
-    
-    # Limit the number of images to visualize if there are more than num_images
-    num_images = min(num_images, len(image_filenames))
-    
-    # Create a figure and axis object to display images
-    fig, axes = plt.subplots(1, num_images, figsize=(15, 3),facecolor='darkblue')
-    
-    # Iterate over the selected images and display them
-    for i, image_filename in enumerate(image_filenames[:num_images]):
-        # Load the image using Matplotlib
-        image_path = os.path.join(path, image_filename)
-        image = mpimg.imread(image_path)
-        
-        # Display the image
-        axes[i].imshow(image)
-        axes[i].axis('off')  # Turn off axis
-        axes[i].set_title(image_filename)  # Set image filename as title
-    
-    # Adjust layout and display the figure
-    plt.tight_layout()
-    plt.show()
-
-# Specify the path containing the images to visualize
-path_to_visualize = "dogs_vs_cats/train/cats"
-
-# Visualize some images from the specified path
-visualize_images(path_to_visualize, num_images=5)
-
-# Specify the path containing the images to visualize
-path_to_visualize = "dogs_vs_cats/train/dogs" 
-
-# Visualize some images from the specified path
-visualize_images(path_to_visualize, num_images=5)
-
-#Data_Dir
-data_dir = 'dogs_vs_cats/train'
-
-# Defining data generator with Data Augmentation
-data_gen_augmented = ImageDataGenerator(rescale = 1/255., 
-                                        validation_split = 0.2,
-                                        zoom_range = 0.2,
-                                        horizontal_flip= True,
-                                        rotation_range = 20,
-                                        width_shift_range=0.2,
-                                        height_shift_range=0.2)
-print('Augmented training Images:')
-train_ds = data_gen_augmented.flow_from_directory(data_dir, 
-                                                              target_size = (224, 224), 
-                                                              batch_size = 32,
-                                                              subset = 'training',
-                                                              class_mode = 'binary')
-
-#Testing Augmented Data
-# Defining Validation_generator withour Data Augmentation
-data_gen = ImageDataGenerator(rescale = 1/255., validation_split = 0.2)
-
-print('Unchanged Validation Images:')
-validation_ds = data_gen.flow_from_directory(data_dir, 
-                                        target_size = (224, 224), 
-                                        batch_size = 32,
-                                        subset = 'validation',
-                                        class_mode = 'binary')
+from include import *
+from data_augmentation import *
 
 # Load the pre-trained Xception model without the top (classification) layer
 xception_base = Xception(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
@@ -213,7 +72,7 @@ class_indices_train = train_ds.class_indices
 print("Class indices for training generator:", class_indices_train)
 
 #Testing Augmented Data
-test_dir_path = "dogs_vs_cats/test"
+test_dir_path = "pic-dataset/test"
 # Defining Validation_generator withour Data Augmentation
 data_test_gen = ImageDataGenerator(rescale = 1/255.)
 
@@ -271,9 +130,9 @@ plt.ylabel("Accuracy")
 plt.show()
 
 # List of paths to your single images
-image_paths = ['dogs_vs_cats/train/cats/cat.0.jpg', 'dogs_vs_cats/train/cats/cat.1.jpg', 'dogs_vs_cats/train/dogs/dog.1.jpg']
+image_paths = ['pic-dataset/train/cats/cat.0.jpg', 'pic-dataset/train/cats/cat.1.jpg', 'pic-dataset/train/dogs/dog.1.jpg', 'pic-dataset/train/foxes/2BWB37STRFS1.jpg']
 # Intialize true labels
-true_labels = ['Cat', 'Cat','Dog']
+true_labels = ['Cat', 'Cat','Dog', 'Fox']
 
 # Load and preprocess each image, make predictions, and display them using a loop
 for img_path, true_label in zip(image_paths, true_labels):
