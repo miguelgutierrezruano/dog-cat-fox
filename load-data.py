@@ -34,7 +34,7 @@ print(df.head())
 count = df['category'].value_counts()
 
 # Create a pie chart using Seaborn
-plt.figure(figsize=(6, 6) , facecolor='darkblue')
+plt.figure(figsize=(6, 6) , facecolor='white')
 palette = sns.color_palette("viridis")
 sns.set_palette(palette)
 plt.pie(count, labels=count.index, autopct='%1.1f%%', startangle=140)

@@ -22,14 +22,20 @@ model.add(Flatten())
 model.add(Dense(220, activation='relu'))
 
 # Add the output layer with 1 unit and sigmoid activation function for binary classification
-model.add(Dense(1, activation='sigmoid'))
+#model.add(Dense(1, activation='sigmoid'))
+model.add(Dense(3, activation='softmax'))
+
 
 model.summary()
 
 # Compile
-model.compile(loss = BinaryCrossentropy(),
+# model.compile(loss = BinaryCrossentropy(),
+#                 optimizer = keras.optimizers.RMSprop(learning_rate=0.0001, rho=0.9),
+#                 metrics = ['accuracy'])
+model.compile(loss = keras.losses.CategoricalCrossentropy(),
                 optimizer = keras.optimizers.RMSprop(learning_rate=0.0001, rho=0.9),
                 metrics = ['accuracy'])
+
 
 #Early_Stopping
 early_stopping = EarlyStopping(
@@ -81,7 +87,13 @@ test_ds = data_gen.flow_from_directory(test_dir_path,
                                         target_size = (224, 224), 
                                         batch_size = 32,
                                         subset = 'validation',
-                                        class_mode = 'binary')
+                                        class_mode = 'categorical')
+
+# test_ds = data_gen.flow_from_directory(test_dir_path, 
+#                                         target_size = (224, 224), 
+#                                         batch_size = 32,
+#                                         subset = 'validation',
+#                                         class_mode = 'binary')
 
 # Evaluate the model on the validation dataset
 test_loss, test_accuracy = model.evaluate(test_ds)
@@ -149,15 +161,18 @@ for img_path, true_label in zip(image_paths, true_labels):
 
     # Make predictions
     predictions = model.predict(img_array)
-    actual_prediction = (predictions > 0.5).astype(int)
+    #actual_prediction = (predictions > 0.5).astype(int)
+    class_labels = ['Cat', 'Dog', 'Fox']  # Define el orden de las clases
+    actual_prediction = np.argmax(predictions, axis=1)  # Índice de la clase con mayor probabilidad
+    predicted_label = class_labels[actual_prediction[0]]
 
     # Display the image with true and predicted labels
     # Convert BGR to RGB for displaying with matplotlib
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  
     plt.axis('off')
-    if actual_prediction[0][0] == 0:
-        predicted_label = 'Cat'
-    else:
-        predicted_label = 'Dog'
+    # if actual_prediction[0][0] == 0:
+    #     predicted_label = 'Cat'
+    # else:
+    #     predicted_label = 'Dog'
     plt.title(f'Predicted: {predicted_label} (True: {true_label})')
     plt.show()

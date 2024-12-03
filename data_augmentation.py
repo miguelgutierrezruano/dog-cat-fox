@@ -17,7 +17,7 @@ train_ds = data_gen_augmented.flow_from_directory(data_dir,
                                                               target_size = (224, 224), 
                                                               batch_size = 32,
                                                               subset = 'training',
-                                                              class_mode = 'binary')
+                                                              class_mode = 'categorical')
 
 #Testing Augmented Data
 # Defining Validation_generator withour Data Augmentation
@@ -28,4 +28,4 @@ validation_ds = data_gen.flow_from_directory(data_dir,
                                         target_size = (224, 224), 
                                         batch_size = 32,
                                         subset = 'validation',
-                                        class_mode = 'binary')
+                                        class_mode = 'categorical')
